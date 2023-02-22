@@ -37,4 +37,10 @@ public class BookEventHandler {
         BeanUtils.copyProperties(bookUpdateEvent ,  book);
         bookRespository.updateInfoById(book.getName() , book.getAuthor() , bookUpdateEvent.getId());
     }
+    @EventHandler
+    @Transactional
+    public void on(BookUpdateStatusEvent bookUpdateEvent) {
+
+        bookRespository.updateStatus(bookUpdateEvent.isIsread() , bookUpdateEvent.getBookId());
+    }
 }

@@ -12,6 +12,7 @@ import com.BrrowingServices.BrrowingService.Query.queries.GetDetailEmployee;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseType;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.SagaLifecycle;
 import org.axonframework.modelling.saga.StartSaga;
@@ -23,14 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Saga
 public class BorrwingSaga {
     @Autowired
-    private  transient CommandGateway commandGateway  ;
+    private transient CommandGateway commandGateway;
 
     @Autowired
-    private  transient QueryGateway queryGateway ;
+    private transient QueryGateway queryGateway;
 
     @StartSaga
     @SagaEventHandler(associationProperty = "id")
-    public void handle(BorrowCreatedEvent  event) throws Exception {
+    public void handle(BorrowCreatedEvent event) throws Exception {
         try {
 
             SagaLifecycle.associateWith("bookId", event.getBookId());
@@ -47,39 +48,65 @@ public class BorrwingSaga {
                 updateBookStatusCommand.setIsReady(false);
                 updateBookStatusCommand.setBorrowId(event.getId());
                 updateBookStatusCommand.setEmployeeId(event.getEmployeeId());
+                commandGateway.sendAndWait(updateBookStatusCommand);
+
             } else {
                 throw new Exception("Sach da duoc muon");
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             RollBackRecord(event.getId());
         }
     }
-    @SagaEventHandler(associationProperty = "bookId")
-    public void handle(BookUpdateCommonEvent event){
-        try {
-            GetDetailEmployee getDetailEmployee =  new GetDetailEmployee() ;
-            getDetailEmployee.setEmployeeId(event.getEmployeeId());
-            EmployeeResponseModel employeeResponseModel =  queryGateway.query(
-                    getDetailEmployee  , ResponseTypes.instanceOf(EmployeeResponseModel.class)
-            ).join()  ;
-            if(employeeResponseModel.getIsDiscipline() == true) {
-                throw new Exception("nhan vien bi ki luat") ;
-            }
-            else {
-                commandGateway.sendAndWait(new SendMessageCommand("phamdinhduy" ,  "181193")) ;
-            }
-        }
-        catch (Exception e) {
 
+    @SagaEventHandler(associationProperty = "bookId")
+    public void handle(BookUpdateCommonEvent event) {
+        try {
+            GetDetailEmployee getDetailEmployee = new GetDetailEmployee();
+            getDetailEmployee.setEmployeeId(event.getEmployeeId());
+            EmployeeResponseModel employeeResponseModel = queryGateway.query(
+                    getDetailEmployee, ResponseTypes.instanceOf(EmployeeResponseModel.class)
+            ).join();
+            if (employeeResponseModel.getIsDiscipline() == true) {
+                throw new Exception("nhan vien bi ki luat");
+            } else {
+                commandGateway.sendAndWait(new SendMessageCommand("phamdinhduy", "181193"));
+            }
+        } catch (Exception e) {
+            RollBackStatus(event.getBookId(),  event.getBorrowId() , event.getEmployeeId());
         }
+    }
+
+    @SagaEventHandler(associationProperty = "id")
+    public void HandleRollBackRecord(String id) {
+        RollBackRecord(id);
+    }
+    @SagaEventHandler(associationProperty = "bookId")
+    public void HandleRollBackStatus(String bookId ,  String BorrowId , String employeeId) {
+        SagaLifecycle.associateWith("bookId" , bookId);
+        RollBackStatus(bookId , bookId ,  employeeId);
     }
     public void RollBackRecord(String id_record) {
-        BorroqwDeletedCommand borrowDeletedCommand =  new BorroqwDeletedCommand() ;
+        BorroqwDeletedCommand borrowDeletedCommand = new BorroqwDeletedCommand();
         borrowDeletedCommand.setBookId(id_record);
-        commandGateway.sendAndWait(borrowDeletedCommand) ;
+        commandGateway.sendAndWait(borrowDeletedCommand);
     }
-    public void RollBackStatus() {
+    public  void RollBackStatus(String bookId , String BorrowId , String EmployeeId) {
+        UpdateBookStatusCommand updateBookStatusCommand = new UpdateBookStatusCommand();
+        updateBookStatusCommand.setBookId(bookId);
+        updateBookStatusCommand.setIsReady(false);
+        commandGateway.sendAndWait(updateBookStatusCommand) ;
+    }
 
+    @SagaEventHandler(associationProperty = "id")
+    @EndSaga
+    public void handle(BorroqwDeletedCommand event) {
+        System.out.println("BorrowDeletedEvent in Saga for Borrowing Id : {} " +
+                event.getId());
+        commandGateway.sendAndWait(event)  ;
+        SagaLifecycle.end();
     }
+
+
+
+
 }

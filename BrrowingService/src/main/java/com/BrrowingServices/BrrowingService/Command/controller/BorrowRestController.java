@@ -30,10 +30,7 @@ public class BorrowRestController {
         BeanUtils.copyProperties(borroqwDeletedCommand ,  borrowDeleteModel);
         commandGateway.sendAndWait(borroqwDeletedCommand) ;
     }
-    @KafkaListener(topics = "BookUpdateStatus" , groupId = "json")
-    public void  UpdateStatus(String message) {
 
-    }
 
 
 

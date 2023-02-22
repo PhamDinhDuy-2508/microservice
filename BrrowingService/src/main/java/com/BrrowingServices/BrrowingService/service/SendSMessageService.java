@@ -9,15 +9,39 @@ import org.springframework.stereotype.Service;
 @Data
 public class SendSMessageService {
     private String message;
-    private String Id;
+
+    private  String topic ;
 
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public KafkaTemplate<String, String> getKafkaTemplate() {
+        return kafkaTemplate;
+    }
+
+    public void setKafkaTemplate(KafkaTemplate<String, String> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void SendMessage() {
         try {
-            kafkaTemplate.send("phamduy" ,  Id + message );
+            kafkaTemplate.send(this.topic ,  this.message);
         }
         catch (Exception e){
             System.out.print(e.getMessage());

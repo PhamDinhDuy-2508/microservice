@@ -15,6 +15,11 @@ spring:
           uri: "http://localhost:9008"
           predicates:
             - Path=/api/v1/employee/**
+        - id: brrowservice
+          uri: "http://localhost:9007"
+          predicates:
+            - Path=/api/v1/Borrow/**
+
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
       globalcors:

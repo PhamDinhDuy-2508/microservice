@@ -4,6 +4,7 @@ import com.BrrowingServices.BrrowingService.Command.data.Borrow;
 import com.BrrowingServices.BrrowingService.Command.data.Respository.BorrowRepository;
 import com.BrrowingServices.BrrowingService.service.SendSMessageService;
 import org.axonframework.eventhandling.EventHandler;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +39,14 @@ public class BorrowEventHandle {
     @EventHandler
     @Async
     public void SendMessageRequest(SendMessageEvent sendMessageEvent) {
+//        SendSMessageService sendSMessageService =  new SendSMessageService() ;
+//        BeanUtils.copyProperties(sendMessageEvent , sendSMessageService);
+    }
+    @EventHandler
+    @Async
+    public void SendMessageUpdateBookStatus(SendMessageBookEvent sendMessageBookEvent) {
         SendSMessageService sendSMessageService =  new SendSMessageService() ;
-        BeanUtils.copyProperties(sendMessageEvent , sendSMessageService);
+        sendSMessageService.setTopic("BookUpdateStatus");
+        sendSMessageService.setMessage(sendMessageBookEvent.toString());
     }
 }

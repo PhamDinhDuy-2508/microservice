@@ -2,6 +2,7 @@ package com.BrrowingServices.BrrowingService.config;
 
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 import static org.apache.kafka.clients.producer.ProducerConfig.*;
 import static org.apache.kafka.clients.producer.ProducerConfig.MAX_REQUEST_SIZE_CONFIG;
-
+@Configuration
 public class KafkaConfig {
     @Bean
     public ProducerFactory<String, String> producerFactory() {

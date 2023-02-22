@@ -3,6 +3,7 @@ package com.BookService.BookService.Command.aggregate;
 import com.BookService.BookService.Command.command.AddBookCommand;
 import com.BookService.BookService.Command.command.DeleteBookCommand;
 import com.BookService.BookService.Command.command.UpdateBookCommand;
+import com.BookService.BookService.Command.command.UpdateStatusCommand;
 import com.BookService.BookService.Command.event.BookCreateEvent;
 import com.BookService.BookService.Command.event.BookEventDelete;
 import com.BookService.BookService.Command.event.BookUpdateEvent;
@@ -12,6 +13,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
+
 @Aggregate
 public class BookAggregate {
     @AggregateIdentifier
@@ -43,6 +45,13 @@ public class BookAggregate {
         BookEventDelete bookEventDelete = new BookEventDelete();
         BeanUtils.copyProperties(deleteBookCommand, bookEventDelete);
         AggregateLifecycle.apply(bookEventDelete);
+    }
+
+    @CommandHandler
+    public void handle(UpdateStatusCommand updateStatusCommand) {
+        BookUpdateEvent bookUpdateEvent = new BookUpdateEvent();
+        BeanUtils.copyProperties(updateStatusCommand, bookUpdateEvent);
+        AggregateLifecycle.apply(bookUpdateEvent) ;
     }
 
     @EventSourcingHandler
