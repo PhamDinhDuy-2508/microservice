@@ -22,6 +22,8 @@ public class BookEventHandler {
         bookRespository.save(book);
     }
 
+
+
     @EventHandler
     @Transactional
     public  void on (BookEventDelete bookEventDelete) {

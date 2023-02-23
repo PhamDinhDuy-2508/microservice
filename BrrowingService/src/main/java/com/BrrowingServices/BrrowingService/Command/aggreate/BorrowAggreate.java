@@ -4,10 +4,7 @@ import com.BrrowingServices.BrrowingService.Command.command.BorroqwDeletedComman
 import com.BrrowingServices.BrrowingService.Command.command.BorrowCreatedCommand;
 import com.BrrowingServices.BrrowingService.Command.command.SendMessageCommand;
 import com.BrrowingServices.BrrowingService.Command.command.UpdateBookStatusCommand;
-import com.BrrowingServices.BrrowingService.Command.event.BorrowCreatedEvent;
-import com.BrrowingServices.BrrowingService.Command.event.BorrowEventDelete;
-import com.BrrowingServices.BrrowingService.Command.event.SendMessageBookEvent;
-import com.BrrowingServices.BrrowingService.Command.event.SendMessageEvent;
+import com.BrrowingServices.BrrowingService.Command.event.*;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -15,14 +12,17 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Aggregate
 public class BorrowAggreate {
+
     @AggregateIdentifier
     private String id;
-    private String BookId;
+    private String bookId;
     private String employeeId;
     private Date borrowingDate;
     private Date returnDate;
@@ -59,19 +59,21 @@ public class BorrowAggreate {
 
     @EventSourcingHandler
     public void handle(BorrowCreatedEvent event) {
-        this.BookId = event.getBookId();
+        this.bookId = event.getBookId();
         this.employeeId = event.getEmployeeId();
         this.borrowingDate = event.getBorrowingDate();
         this.returnDate = event.getBorrowingDate();
+        this.id =  event.getId() ;
+        this.message = "" ;
     }
 
     @EventSourcingHandler
     public void handle(BorrowEventDelete event) {
-        this.BookId = event.getBookId();
+        this.bookId = event.getBookId();
         this.employeeId = event.getEmployeeId();
         this.borrowingDate = event.getBorrowingDate();
         this.returnDate = event.getBorrowingDate();
-    }
+   }
 
     @EventSourcingHandler
     public  void handle(SendMessageEvent sendMessageEvent) {

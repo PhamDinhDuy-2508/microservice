@@ -1,13 +1,13 @@
 package com.BookService.BookService.Query.queries;
 
 public class GetBook {
-    private   Long Id ;
+    private   String Id ;
 
-    public Long getId() {
+    public String getId() {
         return Id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         Id = id;
     }
 }

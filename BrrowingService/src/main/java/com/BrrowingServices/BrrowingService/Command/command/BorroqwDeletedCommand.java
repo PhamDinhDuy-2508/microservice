@@ -9,7 +9,7 @@ public class BorroqwDeletedCommand {
     @TargetAggregateIdentifier
     private String id;
     private String BookId;
-    private String employeeId;
-    private Date borrowingDate;
-    private Date returnDate;
+//    private String employeeId;
+//    private Date borrowingDate;
+//    private Date returnDate;
 }

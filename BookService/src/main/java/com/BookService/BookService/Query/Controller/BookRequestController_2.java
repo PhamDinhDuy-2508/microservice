@@ -33,7 +33,7 @@ public class BookRequestController_2 {
     public ResponseEntity<?> getBook(@PathVariable String Id) {
         GetBook getBook = new GetBook();
 
-        getBook.setId(Long.valueOf(Id));
+        getBook.setId(Id);
 
         BookResponseModel bookResponseModel = queryGateway.query(getBook, ResponseTypes.instanceOf(BookResponseModel.class)).join();
 

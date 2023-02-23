@@ -70,13 +70,18 @@ public class BorrowProjection {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
 
-        String json_str = restTemplate.exchange("localhost:9010/api/v1/employee/getBook/ " + getDetailBook.getIdBook(), HttpMethod.GET,
+        String json_str = restTemplate.exchange("http://localhost:9010/api/v1/book/getBook/ " + getDetailBook.getIdBook(), HttpMethod.GET,
                 entity, String.class).getBody();
         Gson gson = new Gson();
 
         JsonObject jsonObject = new JsonObject();
-        jsonObject = gson.fromJson(json_str, JsonObject.class);
-
+        try {
+            jsonObject = gson.fromJson(json_str, JsonObject.class);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        BookCommonReponseModel bookCommonReponseModel =  convert(jsonObject) ;
         return convert(jsonObject);
     }
 
@@ -100,8 +105,8 @@ public class BorrowProjection {
 
     public BookCommonReponseModel convert(JsonObject jsonObject) {
         BookCommonReponseModel bookCommonReponseModel = new BookCommonReponseModel();
-        bookCommonReponseModel.setBookId(String.valueOf(jsonObject.get("Id")));
-        bookCommonReponseModel.setIsReady(Boolean.valueOf(String.valueOf(jsonObject.get("Isread"))));
+        bookCommonReponseModel.setBookId(String.valueOf(jsonObject.get("id")));
+        bookCommonReponseModel.setIsReady(Boolean.valueOf(String.valueOf(jsonObject.get("isread"))));
         return bookCommonReponseModel;
     }
 
@@ -110,6 +115,18 @@ public class BorrowProjection {
         bookCommonReponseModel.setId(String.valueOf(jsonObject.get("Id")));
         bookCommonReponseModel.setIsDiscipline(Boolean.valueOf(String.valueOf(jsonObject.get("isDiscipline"))));
         return bookCommonReponseModel;
+    }
+    @QueryHandler
+    public List<BorrowReponse> handle(GetAllBorrow get) {
+        List<Borrow> borrowList = borrowRepository.findAll();
+        List<BorrowReponse> borrowReponseList = new ArrayList<>();
+        borrowList.parallelStream().forEach(borrow -> {
+                    BorrowReponse borrowReponse = new BorrowReponse();
+                    BeanUtils.copyProperties(borrow, borrowReponse);
+                    borrowReponseList.add(borrowReponse);
+                }
+        );
+        return borrowReponseList;
     }
 
 }

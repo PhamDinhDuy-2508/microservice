@@ -23,9 +23,9 @@ public class BorrowEventHandle {
 
     @EventHandler
     @Transactional
-    public void CreateBorrowRequest(BorrowCreatedEvent borrowCreatedEvent) {
+    public void CreateBorrowRequest(BorrowCreatedEvent event ) {
         Borrow borrow =  new Borrow() ;
-        BeanUtils.copyProperties(borrowCreatedEvent ,  borrow);
+        BeanUtils.copyProperties(event ,  borrow);
         borrowRepository.save(borrow) ;
     }
 

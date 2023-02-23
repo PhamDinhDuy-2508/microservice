@@ -8,7 +8,7 @@ import java.util.Date;
 public class BorrowCreatedCommand {
     @TargetAggregateIdentifier
     private String id;
-    private String BookId;
+    private String bookId;
     private String employeeId;
     private Date borrowingDate;
     private Date returnDate;

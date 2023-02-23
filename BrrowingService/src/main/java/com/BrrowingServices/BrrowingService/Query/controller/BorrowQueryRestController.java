@@ -1,6 +1,7 @@
 package com.BrrowingServices.BrrowingService.Query.controller;
 
 import com.BrrowingServices.BrrowingService.Query.model.BorrowReponse;
+import com.BrrowingServices.BrrowingService.Query.queries.GetAllBorrow;
 import com.BrrowingServices.BrrowingService.Query.queries.GetByBookId;
 import com.BrrowingServices.BrrowingService.Query.queries.GetByEmployeeId;
 import com.BrrowingServices.BrrowingService.Query.queries.GetById;
@@ -40,6 +41,13 @@ public class BorrowQueryRestController {
         GetByEmployeeId get = new GetByEmployeeId();
         List<BorrowReponse> borrowReponseList = queryGateway.query(get, ResponseTypes.multipleInstancesOf(BorrowReponse.class)).join();
         return ResponseEntity.ok(borrowReponseList);
+    }
+
+    @GetMapping("/GetAllBorrow")
+    public ResponseEntity<?> getAll() {
+        GetAllBorrow getAllBorrow =  new GetAllBorrow() ;
+        List<BorrowReponse> borrowReponseList = queryGateway.query(getAllBorrow, ResponseTypes.multipleInstancesOf(BorrowReponse.class)).join();
+        return  ResponseEntity.ok(borrowReponseList) ;
     }
 
 
