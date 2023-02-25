@@ -40,6 +40,9 @@ public class BookAggregate {
         AggregateLifecycle.apply(bookUpdateEvent);
     }
 
+
+
+
     @CommandHandler
     public void handle(DeleteBookCommand deleteBookCommand) {
         BookEventDelete bookEventDelete = new BookEventDelete();

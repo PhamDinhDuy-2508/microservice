@@ -1,5 +1,6 @@
 package com.BookService.BookService.Command.controller;
 
+import com.BookService.BookService.Command.Service.BookService;
 import com.BookService.BookService.Command.command.AddBookCommand;
 import com.BookService.BookService.Command.command.DeleteBookCommand;
 import com.BookService.BookService.Command.command.UpdateBookCommand;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/book")
 public class BookRequestController {
+    @Autowired
+    BookService bookService ;
     @Autowired
     private CommandGateway commandGateway;
 
@@ -53,18 +57,32 @@ public class BookRequestController {
         return ResponseEntity.ok("Book Was Deleted");
     }
 
-    @KafkaListener(topics = "BookUpdateStatus", groupId = "json")
-    @Async
-    public void UpdateStatus(String message) {
+    @PutMapping("/updateStatus/{id}/{status}")
+    public void updateStatus(@PathVariable String id, @PathVariable boolean status) {
         UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand();
+        updateStatusCommand.setId(id);
+        updateStatusCommand.setBookId(id);
+        updateStatusCommand.setIsread(status);
+        commandGateway.sendAndWait(updateStatusCommand);
+    }
+
+    @KafkaListener(topics = "BookUpdateStatus", groupId = "json")
+    public void UpdateStatus(String message) {
 
         JsonObject jsonObject = new JsonParser().parse(message).getAsJsonObject();
-
+        UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand();
+        updateStatusCommand.setId(String.valueOf(jsonObject.get("bookId")));
         updateStatusCommand.setBookId(String.valueOf(jsonObject.get("bookId")));
+        bookService.UpdateStatus(updateStatusCommand);
 
-        updateStatusCommand.setIsread(Boolean.parseBoolean(String.valueOf(jsonObject.get("isReady"))));
 
-        commandGateway.sendAndWait(updateStatusCommand);
+//        updateStatusCommand.setIsread(Boolean.parseBoolean(String.valueOf(jsonObject.get("isReady"))));
+////
+////
+//
+////
+//
+//        commandGateway.sendAndWait(updateStatusCommand);
     }
 
 }

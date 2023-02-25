@@ -9,6 +9,19 @@ public class UpdateBookCommand {
     private  String Name ;
     private  boolean Isread ;
 
+    private String bookId  ;
+
+    public UpdateBookCommand() {
+    }
+
+    public String getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
+    }
+
     public UpdateBookCommand(String id, String author, String name, boolean isread) {
         Id = id;
         Author = author;

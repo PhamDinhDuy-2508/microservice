@@ -29,18 +29,14 @@ public class BorrowEventHandle {
         borrowRepository.save(borrow) ;
     }
 
+
+
     @EventHandler
     @Transactional
     public void DeleteBorrowRequest(BorrowEventDelete borrowEventDelete) {
         Borrow borrow =  borrowRepository.findById(borrowEventDelete.getId()) ;
         BeanUtils.copyProperties(borrowEventDelete , borrow);
         borrowRepository.delete(borrow);
-    }
-    @EventHandler
-    @Async
-    public void SendMessageRequest(SendMessageEvent sendMessageEvent) {
-//        SendSMessageService sendSMessageService =  new SendSMessageService() ;
-//        BeanUtils.copyProperties(sendMessageEvent , sendSMessageService);
     }
     @EventHandler
     @Async

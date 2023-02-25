@@ -5,6 +5,9 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @Data
 public class UpdateStatusCommand {
     @TargetAggregateIdentifier
+    private String Id ;
+
     private  String bookId ;
     private  boolean Isread ;
+
 }

@@ -5,11 +5,13 @@ import com.BrrowingServices.BrrowingService.Command.command.SendMessageCommand;
 import com.BrrowingServices.BrrowingService.Command.command.UpdateBookStatusCommand;
 import com.BrrowingServices.BrrowingService.Command.event.BookUpdateCommonEvent;
 import com.BrrowingServices.BrrowingService.Command.event.BorrowCreatedEvent;
+import com.BrrowingServices.BrrowingService.Command.event.SendMessageBookEvent;
 import com.BrrowingServices.BrrowingService.Command.model.BookCommonReponseModel;
 import com.BrrowingServices.BrrowingService.Command.model.EmployeeResponseModel;
 import com.BrrowingServices.BrrowingService.Query.projection.BorrowProjection;
 import com.BrrowingServices.BrrowingService.Query.queries.GetDetailBook;
 import com.BrrowingServices.BrrowingService.Query.queries.GetDetailEmployee;
+import com.BrrowingServices.BrrowingService.service.SendBookUpdateStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseType;
@@ -37,6 +39,8 @@ public class BorrwingSaga {
 
     @Autowired
     BorrowProjection borrowProjection ;
+    @Autowired
+    SendBookUpdateStatus sendMessageBookEvent ;
 
     @StartSaga
     @SagaEventHandler(associationProperty = "id")
@@ -55,10 +59,11 @@ public class BorrwingSaga {
             if (bookCommonReponseModel.getIsReady() == true) {
                 UpdateBookStatusCommand updateBookStatusCommand = new UpdateBookStatusCommand();
                 updateBookStatusCommand.setBookId(event.getBookId());
-                updateBookStatusCommand.setIsReady(false);
+                updateBookStatusCommand.setReady(false);
                 updateBookStatusCommand.setBorrowId(event.getId());
+                updateBookStatusCommand.setId(event.getId());
                 updateBookStatusCommand.setEmployeeId(event.getEmployeeId());
-                commandGateway.sendAndWait(updateBookStatusCommand);
+                sendMessageBookEvent.SendMessage(updateBookStatusCommand ,"BookUpdateStatus" );
 
             } else {
                 throw new Exception("Sach da duoc muon");
@@ -87,7 +92,6 @@ public class BorrwingSaga {
             RollBackStatus(event.getBookId(),  event.getBorrowId() , event.getEmployeeId());
         }
     }
-
 //    @SagaEventHandler(associationProperty = "id")
 //    public void HandleRollBackRecord(String id) {
 //        RollBackRecord(id);
@@ -106,7 +110,7 @@ public class BorrwingSaga {
     public  void RollBackStatus(String bookId , String BorrowId , String EmployeeId) {
         UpdateBookStatusCommand updateBookStatusCommand = new UpdateBookStatusCommand();
         updateBookStatusCommand.setBookId(bookId);
-        updateBookStatusCommand.setIsReady(false);
+        updateBookStatusCommand.setReady(false);
         commandGateway.sendAndWait(updateBookStatusCommand) ;
     }
 

@@ -4,7 +4,9 @@ import com.BookService.BookService.Command.data.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface BookRespository extends JpaRepository<Book, Long> {
     @Modifying
     @Query("update Book u set u.Name = ?1, u.Author = ?2 where u.Id = ?3")

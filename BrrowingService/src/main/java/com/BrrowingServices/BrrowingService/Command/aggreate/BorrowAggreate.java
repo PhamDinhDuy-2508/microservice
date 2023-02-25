@@ -26,10 +26,17 @@ public class BorrowAggreate {
     private String employeeId;
     private Date borrowingDate;
     private Date returnDate;
-    private  String message ;
+    private String message;
 
     public BorrowAggreate() {
     }
+    @CommandHandler
+    public void on(UpdateBookStatusCommand updateBookStatusCommand) {
+        SendMessageBookEvent sendMessageBookEvent = new SendMessageBookEvent();
+        BeanUtils.copyProperties(updateBookStatusCommand, sendMessageBookEvent);
+        AggregateLifecycle.apply(sendMessageBookEvent);
+    }
+
 
     @CommandHandler
     public BorrowAggreate(BorrowCreatedCommand borrowCreatedCommand) {
@@ -39,22 +46,24 @@ public class BorrowAggreate {
     }
 
     @CommandHandler
-    public void on(BorroqwDeletedCommand borroqwDeletedCommand) {
+    public void BorrowAggreate(BorroqwDeletedCommand borroqwDeletedCommand) {
         BorrowEventDelete borrowEventDelete = new BorrowEventDelete();
-        BeanUtils.copyProperties( borroqwDeletedCommand, borrowEventDelete);
+        BeanUtils.copyProperties(borroqwDeletedCommand, borrowEventDelete);
         AggregateLifecycle.apply(borrowEventDelete);
     }
+
     @CommandHandler
-    public void on (SendMessageCommand sendMessageCommand) {
-        SendMessageEvent sendMessageEvent =  new SendMessageEvent() ;
-        BeanUtils.copyProperties(sendMessageCommand  ,  sendMessageEvent);
-        AggregateLifecycle.apply(sendMessageEvent) ;
+    public void BorrowAggreate(SendMessageCommand sendMessageCommand) {
+        SendMessageEvent sendMessageEvent = new SendMessageEvent();
+        BeanUtils.copyProperties(sendMessageCommand, sendMessageEvent);
+        AggregateLifecycle.apply(sendMessageEvent);
     }
+
     @CommandHandler
-    public void on(UpdateBookStatusCommand updateBookStatusCommand) {
-        SendMessageBookEvent sendMessageBookEvent =  new SendMessageBookEvent() ;
-        BeanUtils.copyProperties(updateBookStatusCommand , sendMessageBookEvent);
-        AggregateLifecycle.apply(sendMessageBookEvent) ;
+    public void BorrowAggreate(UpdateBookStatusCommand updateBookStatusCommand) {
+        SendMessageBookEvent sendMessageBookEvent = new SendMessageBookEvent();
+        BeanUtils.copyProperties(updateBookStatusCommand, sendMessageBookEvent);
+        AggregateLifecycle.apply(sendMessageBookEvent);
     }
 
     @EventSourcingHandler
@@ -63,8 +72,8 @@ public class BorrowAggreate {
         this.employeeId = event.getEmployeeId();
         this.borrowingDate = event.getBorrowingDate();
         this.returnDate = event.getBorrowingDate();
-        this.id =  event.getId() ;
-        this.message = "" ;
+        this.id = event.getId();
+        this.message = "";
     }
 
     @EventSourcingHandler
@@ -73,15 +82,23 @@ public class BorrowAggreate {
         this.employeeId = event.getEmployeeId();
         this.borrowingDate = event.getBorrowingDate();
         this.returnDate = event.getBorrowingDate();
-   }
-
-    @EventSourcingHandler
-    public  void handle(SendMessageEvent sendMessageEvent) {
-        this.message =  sendMessageEvent.getMessage() ;
     }
 
+    @EventSourcingHandler
+    public void handle(SendMessageEvent sendMessageEvent) {
+        this.id = sendMessageEvent.getId();
+        this.message = "";
+    }
 
-
+    @EventSourcingHandler
+    public void handle(SendMessageBookEvent event) {
+        this.bookId = event.getBookId();
+        this.employeeId = event.getEmployeeId();
+        this.borrowingDate = new Date() ;
+        this.returnDate = new Date();
+        this.id = "";
+        this.message = "";
+    }
 
 
 }
