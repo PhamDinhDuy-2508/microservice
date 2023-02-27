@@ -37,7 +37,6 @@ public class BorrowAggreate {
         AggregateLifecycle.apply(sendMessageBookEvent);
     }
 
-
     @CommandHandler
     public BorrowAggreate(BorrowCreatedCommand borrowCreatedCommand) {
         BorrowCreatedEvent borrowCreatedEvent = new BorrowCreatedEvent();
@@ -59,12 +58,7 @@ public class BorrowAggreate {
         AggregateLifecycle.apply(sendMessageEvent);
     }
 
-    @CommandHandler
-    public void BorrowAggreate(UpdateBookStatusCommand updateBookStatusCommand) {
-        SendMessageBookEvent sendMessageBookEvent = new SendMessageBookEvent();
-        BeanUtils.copyProperties(updateBookStatusCommand, sendMessageBookEvent);
-        AggregateLifecycle.apply(sendMessageBookEvent);
-    }
+
 
     @EventSourcingHandler
     public void handle(BorrowCreatedEvent event) {

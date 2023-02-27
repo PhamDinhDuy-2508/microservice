@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/book")
 public class BookRequestController {
     @Autowired
-    BookService bookService ;
+    BookService bookService;
     @Autowired
     private CommandGateway commandGateway;
 
@@ -70,19 +70,15 @@ public class BookRequestController {
     public void UpdateStatus(String message) {
 
         JsonObject jsonObject = new JsonParser().parse(message).getAsJsonObject();
+
         UpdateStatusCommand updateStatusCommand = new UpdateStatusCommand();
-        updateStatusCommand.setId(String.valueOf(jsonObject.get("bookId")));
-        updateStatusCommand.setBookId(String.valueOf(jsonObject.get("bookId")));
+
+        updateStatusCommand.setId(jsonObject.get("bookId").getAsString());
+
+        updateStatusCommand.setBookId(jsonObject.get("bookId").getAsString());
+
         bookService.UpdateStatus(updateStatusCommand);
 
-
-//        updateStatusCommand.setIsread(Boolean.parseBoolean(String.valueOf(jsonObject.get("isReady"))));
-////
-////
-//
-////
-//
-//        commandGateway.sendAndWait(updateStatusCommand);
     }
 
 }

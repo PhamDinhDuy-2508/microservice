@@ -32,17 +32,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class BorrwingSaga {
     @Autowired
     private transient CommandGateway commandGateway;
-    Logger logger= LoggerFactory.getLogger(BorrwingSaga.class) ;
+    Logger logger = LoggerFactory.getLogger(BorrwingSaga.class);
 
     @Autowired
     private transient QueryGateway queryGateway;
 
     @Autowired
-    BorrowProjection borrowProjection ;
+    BorrowProjection borrowProjection;
     @Autowired
-    SendBookUpdateStatus sendMessageBookEvent ;
+    SendBookUpdateStatus sendMessageBookEvent;
 
     @StartSaga
+
     @SagaEventHandler(associationProperty = "id")
     public void handle(BorrowCreatedEvent event) throws Exception {
         try {
@@ -55,15 +56,19 @@ public class BorrwingSaga {
                     getDetailBook, ResponseTypes.instanceOf(BookCommonReponseModel.class)
             ).join();
 
-
             if (bookCommonReponseModel.getIsReady() == true) {
+
                 UpdateBookStatusCommand updateBookStatusCommand = new UpdateBookStatusCommand();
                 updateBookStatusCommand.setBookId(event.getBookId());
+
                 updateBookStatusCommand.setReady(false);
                 updateBookStatusCommand.setBorrowId(event.getId());
+
                 updateBookStatusCommand.setId(event.getId());
                 updateBookStatusCommand.setEmployeeId(event.getEmployeeId());
-                sendMessageBookEvent.SendMessage(updateBookStatusCommand ,"BookUpdateStatus" );
+                commandGateway.sendAndWait(updateBookStatusCommand) ;
+
+                sendMessageBookEvent.SendMessage(updateBookStatusCommand, "BookUpdateStatus");
 
             } else {
                 throw new Exception("Sach da duoc muon");
@@ -71,7 +76,7 @@ public class BorrwingSaga {
         } catch (Exception e) {
             logger.info("Roll Back");
             System.out.println(e.getMessage());
-            RollBackRecord(event.getId() , event.getBookId());
+            RollBackRecord(event.getId(), event.getBookId());
         }
     }
 
@@ -88,11 +93,13 @@ public class BorrwingSaga {
             } else {
                 commandGateway.sendAndWait(new SendMessageCommand("phamdinhduy", "181193"));
             }
-        } catch (Exception e) {
-            RollBackStatus(event.getBookId(),  event.getBorrowId() , event.getEmployeeId());
+        }
+        catch (Exception e) {
+            RollBackStatus(event.getBookId(), event.getBorrowId(), event.getEmployeeId());
         }
     }
-//    @SagaEventHandler(associationProperty = "id")
+
+    //    @SagaEventHandler(associationProperty = "id")
 //    public void HandleRollBackRecord(String id) {
 //        RollBackRecord(id);
 //    }
@@ -107,11 +114,12 @@ public class BorrwingSaga {
         borrowDeletedCommand.setBookId(id_book);
         commandGateway.sendAndWait(borrowDeletedCommand);
     }
-    public  void RollBackStatus(String bookId , String BorrowId , String EmployeeId) {
+
+    public void RollBackStatus(String bookId, String BorrowId, String EmployeeId) {
         UpdateBookStatusCommand updateBookStatusCommand = new UpdateBookStatusCommand();
         updateBookStatusCommand.setBookId(bookId);
         updateBookStatusCommand.setReady(false);
-        commandGateway.sendAndWait(updateBookStatusCommand) ;
+        commandGateway.sendAndWait(updateBookStatusCommand);
     }
 
 //    @SagaEventHandler(associationProperty = "id")
@@ -122,8 +130,6 @@ public class BorrwingSaga {
 //        commandGateway.sendAndWait(event)  ;
 //        SagaLifecycle.end();
 //    }
-
-
 
 
 }

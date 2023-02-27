@@ -35,13 +35,13 @@ public class BookAggregate {
 
     @CommandHandler
     public void handle(UpdateBookCommand updateBookCommand) {
+
         BookUpdateEvent bookUpdateEvent = new BookUpdateEvent();
+
         BeanUtils.copyProperties(updateBookCommand, bookUpdateEvent);
+
         AggregateLifecycle.apply(bookUpdateEvent);
     }
-
-
-
 
     @CommandHandler
     public void handle(DeleteBookCommand deleteBookCommand) {
@@ -71,6 +71,7 @@ public class BookAggregate {
 
         this.Author = bookUpdateEvent.getAuthor();
         this.Isread = bookUpdateEvent.isIsread();
+
         this.Name = bookUpdateEvent.getName();
     }
 

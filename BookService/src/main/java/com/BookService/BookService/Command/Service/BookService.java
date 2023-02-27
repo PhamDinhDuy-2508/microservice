@@ -19,8 +19,6 @@ public class BookService {
     public void UpdateStatus(UpdateStatusCommand updateStatusCommand) {
         try {
             StringBuilder stringBuilder =  new StringBuilder(updateStatusCommand.getBookId()) ;
-            stringBuilder.deleteCharAt(0) ;
-            stringBuilder.deleteCharAt(stringBuilder.toString().length());
             bookRespository.updateStatus(updateStatusCommand.isIsread(),stringBuilder.toString());
         }
         catch (Exception e) {
