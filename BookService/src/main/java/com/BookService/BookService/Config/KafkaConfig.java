@@ -14,7 +14,6 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 
 @Configuration
 public class KafkaConfig {
-
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         final Map<String, Object> configProps = new HashMap<>();
@@ -24,10 +23,9 @@ public class KafkaConfig {
         configProps.put(MAX_REQUEST_SIZE_CONFIG, "20971520");
         return new DefaultKafkaProducerFactory<>(configProps);
     }
+
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
-
-
 }
